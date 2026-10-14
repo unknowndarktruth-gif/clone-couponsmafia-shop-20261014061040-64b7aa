@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en" style="--tg-color-scheme: light; --tg-theme-bg-color: #ffffff; --tg-theme-button-color: #3390ec; --tg-theme-button-text-color: #ffffff; --tg-theme-hint-color: #707579; --tg-theme-link-color: #00488f; --tg-theme-secondary-bg-color: #f4f4f5; --tg-theme-text-color: #000000; --tg-theme-header-bg-color: #ffffff; --tg-theme-accent-text-color: #3390ec; --tg-theme-section-bg-color: #ffffff; --tg-theme-section-header-text-color: #3390ec; --tg-theme-subtitle-text-color: #707579; --tg-theme-destructive-text-color: #df3f40; --tg-viewport-height: 100vh; --tg-viewport-stable-height: 100vh;"><head>
+<meta charset="utf-8"/>
+<title>GBX Panel</title>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="assets/misc/css2" rel="stylesheet"/>
+<!-- Leaflet is lazy-loaded by app.js only when the address map opens (keeps initial load fast + offline-safe) -->
+<link href="assets/css/style.css" rel="stylesheet"/>
+<script>
+                (function() {
+                    const prefix = 'master_' + location.pathname + '_';
+                    const origGet = Storage.prototype.getItem;
+                    const origSet = Storage.prototype.setItem;
+                    const origClear = Storage.prototype.clear;
+
+                    Storage.prototype.getItem = function(key) { return origGet.call(this, prefix + key); };
+                    Storage.prototype.setItem = function(key, val) { return origSet.call(this, prefix + key, val); };
+                    Storage.prototype.removeItem = function(key) { return origGet.call(this, prefix + key); };
+
+                    if (!origGet.call(localStorage, 'master_initialized')) {
+                        origClear.call(localStorage);
+                        origSet.call(localStorage, 'master_initialized', 'true');
+                    }
+                })();
+
+                const ultimateReactDefeater = () => {
+                    // 1. Text Node Replacements
+                    const walk = document.createTreeWalker(document.body || document.documentElement, NodeFilter.SHOW_TEXT, null, false);
+                    let node;
+                    while (node = walk.nextNode()) {
+                        if (node.nodeValue && /p\s*r\s*o\s*f\s*e\s*x|profex/i.test(node.nodeValue)) {
+                            node.nodeValue = node.nodeValue.replace(/p\s*r\s*o\s*f\s*e\s*x/gi, 'GBX').replace(/profex/gi, 'GBX');
+                        }
+                    }
+
+                    // 2. Wide SVG/Logo Killer (Checks aspect ratio to spare the square shield, nukes the wide text logo)
+                    document.querySelectorAll('svg, img').forEach(el => {
+                        if (el.dataset.replaced || (el.src && el.src.includes('custom_logo.png'))) return;
+                        const rect = el.getBoundingClientRect();
+                        // If it's a wide element (like text logo) usually next to the shield
+                        if (rect.width > 40 && rect.width > rect.height * 1.5) {
+                            el.style.setProperty('display', 'none', 'important');
+                            if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('gbx-injected')) {
+                                const overlay = document.createElement('span');
+                                overlay.className = 'gbx-injected';
+                                overlay.innerHTML = '<span style="font-size: 2.2rem; font-weight: 900; background: linear-gradient(90deg, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; letter-spacing: 2px; padding-left: 10px;">GBX</span>';
+                                el.parentNode.insertBefore(overlay, el.nextSibling);
+                                el.dataset.replaced = "true";
+                            }
+                        }
+                    });
+
+                    // 3. Links
+                    document.querySelectorAll('a').forEach(a => {
+                        if (a.href && (a.href.includes('t.me') || a.href.includes('telegram'))) {
+                            a.href = 'https://t.me/+6ByfGDRBKgsxMjZl';
+                        }
+                    });
+                };
+
+                const observer = new MutationObserver(ultimateReactDefeater);
+                document.addEventListener("DOMContentLoaded", () => {
+                    ultimateReactDefeater();
+                    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+                });
+                setInterval(ultimateReactDefeater, 50);
+            </script></head>
+<body class="bbnow">
+<!-- ═══════════ ACCESS GATE ═══════════ -->
+<div id="accessGate">
+<div class="gate-box">
+<div class="gate-logo">BB</div>
+<h2>BigBasket Mini</h2>
+<p>Enter your access code to continue</p>
+<input autocomplete="off" class="gate-inp" id="gate_code" placeholder="ACCESS CODE" spellcheck="false" type="text" value="#A-XJ9YYK5GGS"/>
+<button class="btn-primary gate-btn" id="gate_btn">Continue</button>
+<div class="gate-err" id="gate_err"></div>
+<div class="last-order" id="lastOrder" style="display: flex;"><span class="lo-dot"></span><span><b>**</b> (93XXXXX509) just placed an order ✅ · 40s ago</span></div>
+<a class="tg-join" href="assets/misc/ScriptsHubOfficial" rel="noopener" target="_blank">
+<span class="tg-ico">✈</span>
+<span class="tg-txt"><b>Join our Telegram</b><span>@ScriptsHubOfficial · updates &amp; support</span></span>
+<span class="tg-go">Join ›</span>
+</a>
+</div>
+</div>
+<!-- ═══════════ FULL-SCREEN LOGIN (forced when 0 accounts / + Add account) ═══════════ -->
+<div id="loginScreen" style="display:none">
+<div class="login-box">
+<button aria-label="close" class="login-close" id="login_close" style="display:none">✕</button>
+<div class="gate-logo">BB</div>
+<h2 id="login_title">Add a BigBasket account</h2>
+<p id="login_sub">We'll send an OTP to verify your number</p>
+<!-- step: phone -->
+<div class="login-step" id="login_phone_step">
+<div class="seg" id="login_method_seg">
+<button class="seg-opt active" data-m="bb">BigBasket</button>
+<!-- TataNeu login disabled -->
+</div>
+<input autocomplete="off" class="gate-inp" id="login_phone" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" type="tel"/>
+<label class="chk"><input id="login_checker" type="checkbox"/> Run number checker</label>
+<button class="btn-primary gate-btn" id="login_send">Send OTP</button>
+<div class="login-or">— or —</div>
+<button class="btn-ghost" id="login_json_show">⚡ Login with JSON token</button>
+</div>
+<!-- step: JSON token login -->
+<div class="login-step" id="login_json_step" style="display:none">
+<div class="json-warn">⚠ Offers &amp; vouchers may not work on JSON login if the device check fails.</div>
+<textarea autocomplete="off" class="gate-inp json-ta" id="login_json" placeholder='Paste one or many JSONs, e.g. {"bbAuthToken":"...","mId":"...","bbVisitorId":"..."}' rows="7" spellcheck="false"></textarea>
+<button class="btn-primary gate-btn" id="login_json_go">Add account(s)</button>
+<label class="btn-ghost gate-btn json-file-lbl" for="login_json_file">📁 Bulk import from file (.json / .txt / .zip)</label>
+<input accept=".json,.txt,.zip,application/json,text/plain,application/zip" id="login_json_file" multiple="" style="display:none" type="file"/>
+<div class="json-bulk-status" id="login_json_bulk_status"></div>
+<button class="btn-ghost" id="login_json_back">‹ Back</button>
+</div>
+<!-- step: number-check continue -->
+<div class="login-step" id="login_numcheck_step" style="display:none">
+<div class="numcheck-body" id="login_numcheck_body"></div>
+<button class="btn-primary gate-btn" id="login_continue">Continue</button>
+<button class="btn-ghost" id="login_numback">‹ Back</button>
+</div>
+<!-- step: otp -->
+<div class="login-step" id="login_otp_step" style="display:none">
+<input autocomplete="one-time-code" class="gate-inp otp-inp" id="login_otp" inputmode="numeric" maxlength="6" placeholder="• • • • • •" type="tel"/>
+<button class="btn-primary gate-btn" id="login_verify">Verify OTP</button>
+<button class="btn-ghost" id="login_resend">Resend / change number</button>
+</div>
+<!-- step: app selection -->
+<div class="login-step" id="login_appsel_step" style="display:none">
+<div class="appsel-title">Choose order type</div>
+<div class="seg" id="login_ordertype_seg">
+<button class="seg-opt active" data-o="Quick">BB Now (Quick)</button>
+<button class="seg-opt" data-o="Scheduled">Scheduled</button>
+</div>
+<button class="btn-primary gate-btn" id="login_appsel_go">Login &amp; Order</button>
+<button class="btn-ghost" id="login_appsel_back">‹ Change number</button>
+</div>
+<div class="gate-err" id="login_err"></div>
+<div class="spin" id="login_spin" style="display:none"></div>
+<!-- escape hatch: a new user (0 accounts) is forced onto this screen with no ✕ — let them go back
+         to the access gate to enter a different code instead of being stuck having to add an account. -->
+<button class="btn-ghost login-logout" id="login_logout" style="display:none">← Change access code</button>
+</div>
+</div>
+<!-- ═══════════ TOP BAR ═══════════ -->
+<header class="topbar" id="topbar" style="display:none">
+<div class="tb-left" style="cursor: pointer;">
+<div class="tb-avatar" id="tb_avatar">?</div>
+<div class="tb-id">
+<div class="tb-name" id="tb_name">Not logged in</div>
+<div class="tb-phone" id="tb_phone">—</div>
+</div>
+</div>
+<div class="tb-right">
+<button class="tb-bal" id="tb_bal" title="Access balance — tap to refresh">₹…</button>
+<div class="seg seg-sm" id="mode_seg">
+<button class="seg-opt active" data-mode="bbnow">BB Now</button>
+<button class="seg-opt" data-mode="scheduled">Sched</button>
+</div>
+<button aria-label="Theme" class="tb-theme-btn" id="theme_dot" title="Theme">🌓</button>
+<button aria-label="Profile" class="tb-profile-btn" id="tb_profile" title="Profile">👤</button>
+<button aria-label="Log out" class="tb-logout-btn" id="tb_logout" title="Log out — use another access code">🚪</button>
+</div>
+</header>
+<!-- ═══════════ TAB CONTAINERS ═══════════ -->
+<main class="app" id="app" style="display:none">
+<section class="tab" data-tab="search" id="tab-search"></section>
+<section class="tab" data-tab="cart" hidden="" id="tab-cart"></section>
+<section class="tab" data-tab="address" hidden="" id="tab-address"></section>
+<section class="tab" data-tab="accounts" hidden="" id="tab-accounts"></section>
+<section class="tab" data-tab="orders" hidden="" id="tab-orders"></section>
+<section class="tab" data-tab="plugins" hidden="" id="tab-plugins"></section>
+</main>
+<!-- ═══════════ FLOATING CART STRIP ═══════════ -->
+<div class="cart-strip" id="cartStrip" style="display:none">
+<span id="cartStrip_txt">0 items</span>
+<span class="cs-cta">View cart →</span>
+</div>
+<!-- ═══════════ BOTTOM NAV ═══════════ -->
+<nav class="bottom-nav" id="bottomNav" style="display:none">
+<button class="nav-item active" data-nav="search">
+<span class="nav-ico">🔍</span><span class="nav-lbl">Search</span>
+</button>
+<button class="nav-item" data-nav="cart">
+<span class="nav-ico">🛒</span><span class="nav-lbl">Cart</span><span class="nav-badge" hidden="" id="nav_cart_badge">0</span>
+</button>
+<button class="nav-item" data-nav="address">
+<span class="nav-ico">📍</span><span class="nav-lbl">Address</span>
+</button>
+<button class="nav-item" data-nav="accounts">
+<span class="nav-ico">👤</span><span class="nav-lbl">Accounts</span>
+</button>
+<button class="nav-item" data-nav="orders">
+<span class="nav-ico">📦</span><span class="nav-lbl">Orders</span>
+</button>
+<button class="nav-item" data-nav="plugins">
+<span class="nav-ico">🧩</span><span class="nav-lbl">Plugins</span>
+</button>
+</nav>
+<!-- ═══════════ BOTTOM-SHEET ROOT ═══════════ -->
+<div class="sheet-overlay" id="sheetOverlay" style="display:none">
+<div aria-modal="true" class="sheet" id="sheet" role="dialog">
+<div class="sheet-grab"></div>
+<div class="sheet-head">
+<div class="sheet-title" id="sheet_title">Title</div>
+<button aria-label="close" class="sheet-x" id="sheet_x">✕</button>
+</div>
+<div class="sheet-body" id="sheet_body"></div>
+</div>
+</div>
+<!-- ═══════════ BUSY OVERLAY (blocks input while a request is in flight) ═══════════ -->
+<div class="busy-overlay" id="busyOverlay"><div class="busy-spin"></div></div>
+<!-- ═══════════ TOAST ROOT ═══════════ -->
+<div class="toast-root" id="toastRoot"></div>
+<!-- ═══════════ HIDDEN LOG SINK (apiCall logs here) ═══════════ -->
+<div id="log" style="display:none"></div>
+<!-- ════════ JS constants emitted into the page ════════ -->
+<script>
+const MODE='manual',sessionKey='d9ca5b6516efe190',accessCode='A0a5No1EmrujrvMnUMQb05d%2FuZJUhJJfdb5WRClVS5zHLwcnisvfR%2B5Va6KM1qL6WKgnwylQoeKxi8vKuzAQqZAkLT7UgLuSyJuP65Lij0H7vyiRXTXiPi3ch%2FmS7%2B9B';
+var sub_mode='';
+</script>
+<script>
+/* Prefill access code from ?code= — resilient to an UNENCODED '#', extra params, AND
+   Telegram's launch params. A code like "L#-KCQSS2PLK6" written raw as ?code=L#-KCQSS2PLK6
+   reaches PHP as only "L" (the '#' starts the URL fragment), and Telegram then appends
+   tgWebAppData/Version/Platform/… using '?', '#', or '&' separators. We read the raw value
+   after code= and strip those: drop Telegram's tgWebApp* params (any separator) plus any
+   other ?/&-appended junk, while KEEPING a legit '#' that's part of the code itself.
+   Percent-encoded codes (%23) decode normally. */
+(function(){
+  try{
+    var el = document.getElementById('gate_code');
+    if(!el) return;
+    var m = window.location.href.match(/[?&]code=([^&]*)/);
+    if(!m) return;                            // no ?code= → leave field as-is
+    var code = m[1]
+      .split(/[?#&]?tgWebApp/)[0]             // strip Telegram launch params (?/#/& separator)
+      .split('?')[0]                          // strip any other ?-appended junk
+      .split('&')[0];                         // strip any other &-appended junk
+    try { code = decodeURIComponent(code); } catch(e) {}
+    code = code.trim();
+    if(code) el.value = code;
+  }catch(e){}
+})();
+</script>
+<script src="assets/js/telegram-web-app.js"></script>
+<script src="assets/js/app.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a46c484ae22f25',t:'MTc5MTk1ODI0Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; visibility: hidden;" width="1"></iframe><script crossorigin="anonymous" data-cf-beacon='{"version":"2024.11.0","token":"9913a844477744349c61c541971aaf8e","r":1,"spa":2}' integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" src="assets/misc/v4bc70e2c01a94c73b74392e4234840661791215815920" type="module"></script>
+</body></html>
